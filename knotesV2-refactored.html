@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Knotes — Your Learning Notebook</title>
+
+  <!-- Fonts: Polish-first with optional playful accent -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+  /* =============================================================
+     CSS VARIABLES — Single source of truth
+     ============================================================= */
+  :root {
+    /* Brand Colors */
+    --color-brand: #ee7d2d;
+    --color-brand-hover: #d96a1c;
+    --color-brand-light: #fff7f0;
+    --color-brand-muted: #f5d4bc;
+
+    /* Surfaces */
+    --color-surface: #ffffff;
+    --color-surface-raised: #ffffff;
+    --color-background: #faf8f6;
+    --color-paper: #fffdfb;
+
+    /* Text */
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #5a5a5a;
+    --color-text-muted: #888888;
+    --color-text-inverse: #ffffff;
+
+    /* Borders */
+    --color-border: #e8e4e0;
+    --color-border-light: #f0ece8;
+    --color-border-brand: var(--color-brand);
+
+    /* Feedback */
+    --color-success: #16a34a;
+    --color-success-light: #dcfce7;
+    --color-error: #dc2626;
+    --color-error-light: #fef2f2;
+
+    /* Typography */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-accent: 'Caveat', 'Segoe Print', cursive;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --space-2xl: 32px;
+    --space-3xl: 48px;
+
+    /* Layout */
+    --header-height: 64px;
+    --sidebar-width: 260px;
+    --sidebar-collapsed: 56px;
+    --content-max-width: 1200px;
+    --gutter: clamp(16px, 4vw, 32px);
+
+    /* Effects */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --shadow-xl: 0 16px 48px rgba(0,0,0,0.16);
+
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-base: 200ms ease;
+    --transition-slow: 300ms ease;
+  }
+
+  /* =============================================================
+     RESET & BASE
+     ============================================================= */
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    height: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100%;
+    font-family: var(--font-primary);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    background: var(--color-background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  img, video, svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Focus styles for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =============================================================
+     UTILITY CLASSES
+     ============================================================= */
+  .hidden { display: none !important; }
+
+  .fade-out {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+
+  /* =============================================================
+     SHARED COMPONENTS
+     ============================================================= */
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--color-brand);
+    color: var(--color-text-inverse);
+  }
+  .btn-primary:hover {
+    background: var(--color-brand-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+  }
+  .btn-secondary:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-brand);
+  }
+  .btn-ghost:hover {
+    background: var(--color-brand-light);
+  }
+
+  .btn-icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: var(--radius-md);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+  }
+
+  .card-interactive {
+    cursor: pointer;
+  }
+  .card-interactive:hover {
+    border-color: var(--color-brand);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .card-interactive:focus-visible {
+    border-color: var(--color-brand);
+  }
+
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-xs);
+  }
+
+  .card-meta {
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+  }
+
+  .badge-brand {
+    background: var(--color-brand-light);
+    color: var(--color-brand);
+  }
+
+  .badge-success {
+    background: var(--color-success-light);
+    color: var(--color-success);
+  }
+
+  /* Chip */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+  }
+
+  /* =============================================================
+     VIEW: TOPICS & MODULES GRID
+     ============================================================= */
+  .view {
+    min-height: 100vh;
+    padding-bottom: var(--space-3xl);
+  }
+
+  .view-header {
+    text-align: center;
+    padding: var(--space-3xl) var(--gutter) var(--space-xl);
+  }
+
+  .view-header h1 {
+    font-size: clamp(24px, 5vw, 36px);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+  }
+
+  .view-header .subtitle {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+  }
+
+  .view-nav {
+    padding: 0 var(--gutter) var(--space-lg);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-lg);
+    padding: 0 var(--gutter);
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+  }
+
+  .grid-topics {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .grid-modules {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  /* Topic/Module Cards */
+  .topic-card,
+  .module-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .topic-card .card-features,
+  .module-card .card-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: auto;
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  /* Locked state for future progression */
+  .card.locked {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .card.locked::after {
+    content: '🔒';
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+  }
+
+  /* =============================================================
+     VIEW: NOTEBOOK
+     ============================================================= */
+
+  /* Notebook Header */
+  .notebook-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .notebook-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: var(--space-md) var(--gutter);
+    min-height: var(--header-height);
+  }
+
+  .notebook-header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .notebook-header-center {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 14px;
+    color: var(--color-text-muted);
+    overflow: hidden;
+  }
+
+  .breadcrumb-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .breadcrumb-item.current {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .breadcrumb-separator {
+    color: var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .notebook-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  /* Mobile menu toggle */
+  .menu-toggle {
+    display: none;
+  }
+
+  /* Notebook Layout */
+  .notebook-layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    gap: 0;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    min-height: calc(100vh - var(--header-height));
+  }
+
+  /* Sidebar */
+  .notebook-sidebar {
+    position: sticky;
+    top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-border-light);
+    position: sticky;
+    top: 0;
+    background: var(--color-surface);
+    z-index: 1;
+  }
+
+  .sidebar-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: var(--space-md);
+  }
+
+  .sidebar-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-md);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid transparent;
+  }
+
+  .sidebar-item:hover {
+    background: var(--color-background);
+    color: var(--color-text-primary);
+  }
+
+  .sidebar-item.active {
+    background: var(--color-brand-light);
+    color: var(--color-brand);
+    border-color: var(--color-brand-muted);
+    font-weight: 600;
+  }
+
+  .sidebar-item-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--color-background);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+  }
+
+  .sidebar-item.active .sidebar-item-number {
+    background: var(--color-brand);
+    color: var(--color-text-inverse);
+  }
+
+  .sidebar-item-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Collapsed sidebar */
+  .notebook-sidebar.collapsed {
+    width: var(--sidebar-collapsed);
+  }
+
+  .notebook-sidebar.collapsed .sidebar-title,
+  .notebook-sidebar.collapsed .sidebar-item-label {
+    display: none;
+  }
+
+  .notebook-sidebar.collapsed .sidebar-item {
+    justify-content: center;
+    padding: var(--space-md);
+  }
+
+  /* Main Content */
+  .notebook-content {
+    background: var(--color-paper);
+    padding: var(--space-xl) var(--gutter) var(--space-3xl);
+    min-width: 0;
+  }
+
+  /* Mobile Drawer */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 200;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+  }
+
+  .drawer-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .drawer-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(320px, 85vw);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-xl);
+    z-index: 201;
+    transform: translateX(-100%);
+    transition: transform var(--transition-base);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer-overlay.open .drawer-panel {
+    transform: translateX(0);
+  }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .drawer-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-md);
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .notebook-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .notebook-sidebar {
+      display: none;
+    }
+
+    .menu-toggle {
+      display: inline-flex;
+    }
+  }
+
+  /* =============================================================
+     KNOTES CONTENT COMPONENTS
+     ============================================================= */
+
+  .knotes-page {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Page Header with Scene */
+  .knotes-scene {
+    display: flex;
+    gap: var(--space-xl);
+    align-items: flex-start;
+    padding: var(--space-xl);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+  }
+
+  .knotes-scene-thumb {
+    width: 160px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--color-brand-light), var(--color-background));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .knotes-scene-thumb-icon {
+    font-size: 32px;
+    opacity: 0.6;
+  }
+
+  .knotes-scene-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .knotes-scene-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+  }
+
+  .knotes-scene-time {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 14px;
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+
+  /* Content Grid */
+  .knotes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+
+  @media (max-width: 700px) {
+    .knotes-grid {
+      grid-template-columns: 1fr;
+    }
+    .knotes-scene {
+      flex-direction: column;
+    }
+    .knotes-scene-thumb {
+      width: 100%;
+      height: 120px;
+    }
+  }
+
+  .knotes-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .knotes-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: var(--space-md);
+  }
+
+  /* Summary List */
+  .knotes-summary-list {
+    list-style: none;
+  }
+
+  .knotes-summary-item {
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--color-border-light);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .knotes-summary-item:last-child {
+    border-bottom: none;
+  }
+
+  /* Handwritten accent - used sparingly */
+  .handwritten {
+    font-family: var(--font-accent);
+    font-size: 1.15em;
+  }
+
+  /* Quiz Recap */
+  .knotes-recap-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .knotes-recap-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+    background: var(--color-background);
+    border-radius: var(--radius-md);
+  }
+
+  .knotes-recap-label {
+    font-weight: 600;
+  }
+
+  .knotes-recap-status {
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  .knotes-recap-status.review {
+    color: var(--color-brand);
+  }
+
+  .knotes-recap-status.mastered {
+    color: var(--color-success);
+  }
+
+  /* Concepts Chips */
+  .knotes-concepts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  /* Reflection */
+  .knotes-reflection {
+    grid-column: 1 / -1;
+  }
+
+  .knotes-reflection-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+  }
+
+  .knotes-xp {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: var(--radius-full);
+  }
+
+  .knotes-textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: var(--space-lg);
+    font-family: var(--font-accent);
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    background: #fffef8;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    resize: vertical;
+    transition: border-color var(--transition-fast);
+  }
+
+  .knotes-textarea:focus {
+    outline: none;
+    border-color: var(--color-brand);
+  }
+
+  .knotes-textarea::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  /* Navigation */
+  .knotes-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    padding: var(--space-xl);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .knotes-nav-pages {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+
+  .knotes-nav-current {
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  /* Page Picker Modal */
+  .page-picker-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+  }
+
+  .page-picker-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .page-picker {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: min(600px, 90vw);
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .page-picker-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .page-picker-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-lg);
+  }
+
+  .page-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--space-md);
+  }
+
+  .page-picker-item {
+    padding: var(--space-lg);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    text-align: left;
+    transition: all var(--transition-fast);
+  }
+
+  .page-picker-item:hover {
+    border-color: var(--color-brand);
+    background: var(--color-brand-light);
+  }
+
+  .page-picker-item.current {
+    border-color: var(--color-brand);
+    background: var(--color-brand-light);
+  }
+
+  .page-picker-item-number {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xs);
+  }
+
+  .page-picker-item-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  /* =============================================================
+     LOADING & EMPTY STATES
+     ============================================================= */
+  .loading-skeleton {
+    background: linear-gradient(90deg, var(--color-background) 25%, var(--color-border-light) 50%, var(--color-background) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-md);
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: var(--space-3xl);
+    color: var(--color-text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 48px;
+    margin-bottom: var(--space-lg);
+  }
+
+  .empty-state-message {
+    font-size: 16px;
+  }
+  </style>
+</head>
+
+<body>
+
+  <!-- Skip Link for Accessibility -->
+  <a href="#main-content" class="visually-hidden">Skip to main content</a>
+
+  <!-- ===== VIEW: TOPICS ===== -->
+  <section id="view-topics" class="view" aria-labelledby="topics-heading">
+    <header class="view-header">
+      <h1 id="topics-heading">Choose a Topic</h1>
+      <p class="subtitle">Select a topic to explore your learning modules</p>
+    </header>
+    <div class="grid grid-topics" id="topics-grid" role="list"></div>
+  </section>
+
+  <!-- ===== VIEW: MODULES ===== -->
+  <section id="view-modules" class="view hidden" aria-labelledby="modules-heading">
+    <header class="view-header">
+      <h1 id="modules-heading">Select a Module</h1>
+      <p class="subtitle">Each module contains structured notes and quizzes</p>
+    </header>
+    <nav class="view-nav">
+      <button id="back-to-topics" class="btn btn-ghost" aria-label="Back to topics">
+        <span aria-hidden="true">←</span> Back to Topics
+      </button>
+    </nav>
+    <div class="grid grid-modules" id="modules-grid" role="list"></div>
+  </section>
+
+  <!-- ===== VIEW: NOTEBOOK ===== -->
+  <section id="view-notebook" class="view hidden" aria-labelledby="notebook-heading">
+
+    <!-- Notebook Header -->
+    <header class="notebook-header">
+      <div class="notebook-header-inner">
+        <div class="notebook-header-left">
+          <button id="back-to-modules" class="btn btn-secondary btn-icon" aria-label="Back to modules">
+            <span aria-hidden="true">←</span>
+          </button>
+          <button id="open-drawer" class="btn btn-secondary btn-icon menu-toggle" aria-label="Open navigation menu">
+            <span aria-hidden="true">☰</span>
+          </button>
+        </div>
+
+        <div class="notebook-header-center">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb-item" id="breadcrumb-topic">Topic</span>
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span class="breadcrumb-item current" id="breadcrumb-module">Module</span>
+          </nav>
+        </div>
+
+        <div class="notebook-header-right">
+          <button id="jump-to-last" class="btn btn-ghost">
+            <span aria-hidden="true">🔖</span> Last note
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Notebook Layout -->
+    <div class="notebook-layout">
+
+      <!-- Sidebar -->
+      <aside class="notebook-sidebar" id="notebook-sidebar" aria-label="Page navigation">
+        <div class="sidebar-header">
+          <span class="sidebar-title">Pages</span>
+          <button id="collapse-sidebar" class="btn btn-icon btn-ghost" aria-label="Collapse sidebar">
+            <span aria-hidden="true">⟨</span>
+          </button>
+        </div>
+        <nav class="sidebar-nav">
+          <ul class="sidebar-list" id="sidebar-list" role="list"></ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="notebook-content" id="main-content" aria-live="polite">
+        <div id="knotes-mount"></div>
+      </main>
+
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div class="drawer-overlay" id="drawer-overlay" aria-hidden="true">
+      <div class="drawer-panel" role="dialog" aria-label="Page navigation">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="drawer-title">Pages</h2>
+          <button id="close-drawer" class="btn btn-icon btn-ghost" aria-label="Close navigation">
+            <span aria-hidden="true">✕</span>
+          </button>
+        </div>
+        <nav class="drawer-body">
+          <ul class="sidebar-list" id="drawer-list" role="list"></ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Page Picker Modal -->
+    <div class="page-picker-overlay" id="page-picker-overlay" role="dialog" aria-label="Select a page">
+      <div class="page-picker">
+        <div class="page-picker-header">
+          <h2 class="page-picker-title">Jump to Page</h2>
+          <button id="close-picker" class="btn btn-icon btn-ghost" aria-label="Close">
+            <span aria-hidden="true">✕</span>
+          </button>
+        </div>
+        <div class="page-picker-body">
+          <div class="page-picker-grid" id="page-picker-grid"></div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+  /**
+   * Knotes Application
+   * Modular, accessible, Webflow-ready
+   */
+  (function() {
+    'use strict';
+
+    /* =============================================================
+       CONFIGURATION
+       ============================================================= */
+    const CONFIG = {
+      TRANSITION_DURATION: 250,
+      STORAGE_PREFIX: 'knotes',
+      // Set to false to disable rough.js arrows (cleaner look)
+      ENABLE_SKETCH_ARROWS: false
+    };
+
+    /* =============================================================
+       STATE MANAGEMENT
+       ============================================================= */
+    const State = {
+      topic: null,
+      module: null,
+      currentPageIndex: 0,
+      pages: [],
+
+      reset() {
+        this.topic = null;
+        this.module = null;
+        this.currentPageIndex = 0;
+        this.pages = [];
+      }
+    };
+
+    /* =============================================================
+       DATA
+       Future: Replace with API fetch or Webflow CMS Collection
+       ============================================================= */
+    const DATA = {
+      topics: [
+        {
+          id: 'web',
+          title: 'Web Development',
+          description: 'JavaScript, React, and modern web technologies',
+          features: ['Videos', 'Notes', 'Quizzes'],
+          locked: false,
+          modules: [
+            {
+              id: 'react',
+              title: 'React Components',
+              description: 'Master component architecture and hooks',
+              pages: [
+                {
+                  id: 'useeffect-basics',
+                  label: 'useEffect Basics',
+                  scene: { title: 'What is useEffect?', time: '03:24' },
+                  summary: [
+                    'Effects run after render to sync with external systems',
+                    'Cleanup functions prevent memory leaks',
+                    'Dependency array controls when effects re-run'
+                  ],
+                  recap: [
+                    { id: 'q1', label: 'Q1', status: 'review', question: 'When do effects run?' }
+                  ],
+                  concepts: ['Hooks', 'Side Effects', 'Lifecycle'],
+                  xp: 10
+                },
+                {
+                  id: 'memoization',
+                  label: 'Memoization',
+                  scene: { title: 'Performance with useMemo', time: '02:08' },
+                  summary: [
+                    'useMemo caches computed values between renders',
+                    'Only recalculates when dependencies change',
+                    'Use for expensive calculations, not premature optimization'
+                  ],
+                  recap: [],
+                  concepts: ['Performance', 'useMemo', 'Optimization'],
+                  xp: 15
+                },
+                {
+                  id: 'usecallback',
+                  label: 'useCallback',
+                  scene: { title: 'Stable Function References', time: '04:12' },
+                  summary: [
+                    'useCallback memoizes function identity',
+                    'Useful when passing callbacks to memoized children',
+                    'Dependency array works like useEffect'
+                  ],
+                  recap: [
+                    { id: 'q2', label: 'Q1', status: 'mastered', question: 'What does useCallback cache?' }
+                  ],
+                  concepts: ['Hooks', 'useCallback', 'React.memo'],
+                  xp: 12
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'db',
+          title: 'Databases',
+          description: 'SQL, normalization, and data modeling',
+          features: ['Videos', 'Notes', 'Practice'],
+          locked: false,
+          modules: [
+            {
+              id: 'design',
+              title: 'Database Design',
+              description: 'Learn proper database architecture',
+              pages: [
+                {
+                  id: 'normalization',
+                  label: 'Normalization',
+                  scene: { title: 'Third Normal Form (3NF)', time: '05:12' },
+                  summary: [
+                    'Normalization reduces data redundancy',
+                    '3NF eliminates transitive dependencies',
+                    'Balance normalization with query performance'
+                  ],
+                  recap: [],
+                  concepts: ['3NF', 'Data Modeling', 'Integrity'],
+                  xp: 10
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    /* =============================================================
+       DOM REFERENCES
+       ============================================================= */
+    const DOM = {
+      // Views
+      viewTopics: document.getElementById('view-topics'),
+      viewModules: document.getElementById('view-modules'),
+      viewNotebook: document.getElementById('view-notebook'),
+
+      // Grids
+      topicsGrid: document.getElementById('topics-grid'),
+      modulesGrid: document.getElementById('modules-grid'),
+
+      // Navigation
+      backToTopics: document.getElementById('back-to-topics'),
+      backToModules: document.getElementById('back-to-modules'),
+      jumpToLast: document.getElementById('jump-to-last'),
+
+      // Breadcrumb
+      breadcrumbTopic: document.getElementById('breadcrumb-topic'),
+      breadcrumbModule: document.getElementById('breadcrumb-module'),
+
+      // Sidebar
+      sidebar: document.getElementById('notebook-sidebar'),
+      sidebarList: document.getElementById('sidebar-list'),
+      collapseSidebar: document.getElementById('collapse-sidebar'),
+
+      // Drawer
+      drawerOverlay: document.getElementById('drawer-overlay'),
+      drawerList: document.getElementById('drawer-list'),
+      drawerTitle: document.getElementById('drawer-title'),
+      openDrawer: document.getElementById('open-drawer'),
+      closeDrawer: document.getElementById('close-drawer'),
+
+      // Page Picker
+      pickerOverlay: document.getElementById('page-picker-overlay'),
+      pickerGrid: document.getElementById('page-picker-grid'),
+      closePicker: document.getElementById('close-picker'),
+
+      // Content
+      knotesMount: document.getElementById('knotes-mount')
+    };
+
+    /* =============================================================
+       UTILITIES
+       ============================================================= */
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
+    function storageKey(pageId, suffix = '') {
+      return `${CONFIG.STORAGE_PREFIX}:${State.module?.id || 'unknown'}:${pageId}${suffix ? ':' + suffix : ''}`;
+    }
+
+    function debounce(fn, delay) {
+      let timer;
+      return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
+
+    /* =============================================================
+       VIEW TRANSITIONS
+       ============================================================= */
+    function showView(viewToShow, viewToHide) {
+      viewToHide.classList.add('fade-out');
+
+      setTimeout(() => {
+        viewToHide.classList.add('hidden');
+        viewToHide.classList.remove('fade-out');
+        viewToShow.classList.remove('hidden');
+
+        // Focus management for accessibility
+        const heading = viewToShow.querySelector('h1, h2');
+        if (heading) heading.focus();
+      }, CONFIG.TRANSITION_DURATION);
+    }
+
+    /* =============================================================
+       TOPICS VIEW
+       ============================================================= */
+    function renderTopics() {
+      DOM.topicsGrid.innerHTML = '';
+
+      DATA.topics.forEach(topic => {
+        const card = document.createElement('article');
+        card.className = `card card-interactive topic-card${topic.locked ? ' locked' : ''}`;
+        card.setAttribute('role', 'listitem');
+        card.setAttribute('tabindex', topic.locked ? '-1' : '0');
+        card.setAttribute('aria-label', `${topic.title}${topic.locked ? ' (locked)' : ''}`);
+
+        card.innerHTML = `
+          <h2 class="card-title">${escapeHtml(topic.title)}</h2>
+          <p class="card-meta">${escapeHtml(topic.description)}</p>
+          <div class="card-features">
+            ${topic.features.map(f => `<span class="chip">${escapeHtml(f)}</span>`).join('')}
+          </div>
+        `;
+
+        if (!topic.locked) {
+          card.addEventListener('click', () => openModulesView(topic.id));
+          card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              openModulesView(topic.id);
+            }
+          });
+        }
+
+        DOM.topicsGrid.appendChild(card);
+      });
+    }
+
+    function openModulesView(topicId) {
+      State.topic = DATA.topics.find(t => t.id === topicId);
+      if (!State.topic) return;
+
+      renderModules();
+      showView(DOM.viewModules, DOM.viewTopics);
+    }
+
+    /* =============================================================
+       MODULES VIEW
+       ============================================================= */
+    function renderModules() {
+      if (!State.topic) return;
+
+      DOM.modulesGrid.innerHTML = '';
+
+      State.topic.modules.forEach(module => {
+        const card = document.createElement('article');
+        card.className = 'card card-interactive module-card';
+        card.setAttribute('role', 'listitem');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', module.title);
+
+        card.innerHTML = `
+          <h2 class="card-title">${escapeHtml(module.title)}</h2>
+          <p class="card-meta">${escapeHtml(module.description || '')}</p>
+          <div class="card-features">
+            <span class="badge badge-brand">${module.pages?.length || 0} pages</span>
+          </div>
+        `;
+
+        card.addEventListener('click', () => openNotebookView(module.id));
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openNotebookView(module.id);
+          }
+        });
+
+        DOM.modulesGrid.appendChild(card);
+      });
+    }
+
+    /* =============================================================
+       NOTEBOOK VIEW
+       ============================================================= */
+    function openNotebookView(moduleId) {
+      State.module = State.topic.modules.find(m => m.id === moduleId);
+      if (!State.module) return;
+
+      State.pages = State.module.pages || [];
+      State.currentPageIndex = 0;
+
+      // Update breadcrumb
+      DOM.breadcrumbTopic.textContent = State.topic.title;
+      DOM.breadcrumbModule.textContent = State.module.title;
+      DOM.drawerTitle.textContent = State.module.title;
+
+      // Render sidebar
+      renderSidebar();
+      renderPagePicker();
+
+      // Render content
+      renderKnotesPage();
+
+      showView(DOM.viewNotebook, DOM.viewModules);
+    }
+
+    function renderSidebar() {
+      const html = State.pages.map((page, idx) => `
+        <li>
+          <button
+            class="sidebar-item${idx === State.currentPageIndex ? ' active' : ''}"
+            data-index="${idx}"
+            aria-current="${idx === State.currentPageIndex ? 'page' : 'false'}"
+          >
+            <span class="sidebar-item-number">${idx + 1}</span>
+            <span class="sidebar-item-label">${escapeHtml(page.label)}</span>
+          </button>
+        </li>
+      `).join('');
+
+      DOM.sidebarList.innerHTML = html;
+      DOM.drawerList.innerHTML = html;
+    }
+
+    function renderPagePicker() {
+      DOM.pickerGrid.innerHTML = State.pages.map((page, idx) => `
+        <button
+          class="page-picker-item${idx === State.currentPageIndex ? ' current' : ''}"
+          data-index="${idx}"
+        >
+          <div class="page-picker-item-number">Page ${idx + 1}</div>
+          <div class="page-picker-item-title">${escapeHtml(page.label)}</div>
+        </button>
+      `).join('');
+    }
+
+    function goToPage(index) {
+      if (index < 0 || index >= State.pages.length) return;
+
+      State.currentPageIndex = index;
+      renderKnotesPage();
+      renderSidebar();
+      renderPagePicker();
+
+      // Close drawer if open
+      closeDrawer();
+    }
+
+    /* =============================================================
+       KNOTES PAGE RENDERER
+       ============================================================= */
+    function renderKnotesPage() {
+      const page = State.pages[State.currentPageIndex];
+      if (!page) {
+        DOM.knotesMount.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <p class="empty-state-message">No content available</p>
+          </div>
+        `;
+        return;
+      }
+
+      const savedNote = localStorage.getItem(storageKey(page.id, 'note')) || '';
+
+      DOM.knotesMount.innerHTML = `
+        <div class="knotes-page">
+
+          <!-- Scene Header -->
+          <div class="knotes-scene">
+            <div class="knotes-scene-thumb">
+              <span class="knotes-scene-thumb-icon">🎬</span>
+            </div>
+            <div class="knotes-scene-info">
+              <h2 class="knotes-scene-title" id="notebook-heading">${escapeHtml(page.scene?.title || page.label)}</h2>
+              ${page.scene?.time ? `
+                <span class="knotes-scene-time">
+                  <span aria-hidden="true">⏱</span>
+                  ${escapeHtml(page.scene.time)}
+                </span>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- Content Grid -->
+          <div class="knotes-grid">
+
+            <!-- Summary -->
+            <div class="knotes-card">
+              <h3 class="knotes-card-title">Key Summary</h3>
+              <ul class="knotes-summary-list">
+                ${(page.summary || []).map(s => `
+                  <li class="knotes-summary-item">${escapeHtml(s)}</li>
+                `).join('')}
+              </ul>
+              <button class="btn btn-ghost" id="copy-summary" style="margin-top: var(--space-md);">
+                📋 Copy notes
+              </button>
+            </div>
+
+            <!-- Quiz Recap -->
+            <div class="knotes-card">
+              <h3 class="knotes-card-title">Quiz Recap</h3>
+              ${page.recap?.length ? `
+                <div class="knotes-recap-list">
+                  ${page.recap.map(r => `
+                    <div class="knotes-recap-item">
+                      <span class="knotes-recap-label">${escapeHtml(r.label)}</span>
+                      <span class="knotes-recap-status ${r.status}">${escapeHtml(r.status)}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : `
+                <p class="card-meta">No quizzes for this page</p>
+              `}
+            </div>
+
+            <!-- Concepts -->
+            <div class="knotes-card">
+              <h3 class="knotes-card-title">Linked Concepts</h3>
+              ${page.concepts?.length ? `
+                <div class="knotes-concepts">
+                  ${page.concepts.map(c => `<span class="chip">${escapeHtml(c)}</span>`).join('')}
+                </div>
+              ` : `
+                <p class="card-meta">No linked concepts</p>
+              `}
+            </div>
+
+            <!-- XP Display -->
+            <div class="knotes-card">
+              <h3 class="knotes-card-title">Progress</h3>
+              <div class="knotes-xp">+${page.xp || 0} XP</div>
+            </div>
+
+            <!-- Reflection -->
+            <div class="knotes-card knotes-reflection">
+              <div class="knotes-reflection-header">
+                <h3 class="knotes-card-title">Your Reflection</h3>
+              </div>
+              <textarea
+                class="knotes-textarea"
+                id="reflection-textarea"
+                placeholder="If I taught this concept, I'd explain it as..."
+                aria-label="Your reflection notes"
+              >${escapeHtml(savedNote)}</textarea>
+            </div>
+
+          </div>
+
+          <!-- Navigation -->
+          <nav class="knotes-nav" aria-label="Page navigation">
+            <button
+              class="btn btn-secondary"
+              id="prev-page"
+              ${State.currentPageIndex === 0 ? 'disabled' : ''}
+              aria-label="Previous page"
+            >
+              ← Prev
+            </button>
+
+            <div class="knotes-nav-pages">
+              <button class="btn btn-ghost" id="open-picker" aria-label="Jump to page">
+                Page <span class="knotes-nav-current">${State.currentPageIndex + 1}</span> of ${State.pages.length}
+              </button>
+            </div>
+
+            <button
+              class="btn btn-primary"
+              id="next-page"
+              ${State.currentPageIndex === State.pages.length - 1 ? 'disabled' : ''}
+              aria-label="Next page"
+            >
+              Next →
+            </button>
+          </nav>
+
+        </div>
+      `;
+
+      // Wire up page-specific events
+      setupKnotesPageEvents(page);
+    }
+
+    function setupKnotesPageEvents(page) {
+      // Navigation
+      const prevBtn = document.getElementById('prev-page');
+      const nextBtn = document.getElementById('next-page');
+      const openPickerBtn = document.getElementById('open-picker');
+
+      if (prevBtn) prevBtn.addEventListener('click', () => goToPage(State.currentPageIndex - 1));
+      if (nextBtn) nextBtn.addEventListener('click', () => goToPage(State.currentPageIndex + 1));
+      if (openPickerBtn) openPickerBtn.addEventListener('click', openPicker);
+
+      // Copy summary
+      const copyBtn = document.getElementById('copy-summary');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = (page.summary || []).join('\n');
+          try {
+            await navigator.clipboard.writeText(text);
+            copyBtn.textContent = '✓ Copied!';
+            setTimeout(() => { copyBtn.textContent = '📋 Copy notes'; }, 1500);
+          } catch (e) {
+            console.error('Copy failed', e);
+          }
+        });
+      }
+
+      // Reflection auto-save
+      const textarea = document.getElementById('reflection-textarea');
+      if (textarea) {
+        const saveReflection = debounce((value) => {
+          localStorage.setItem(storageKey(page.id, 'note'), value);
+        }, 500);
+
+        textarea.addEventListener('input', (e) => saveReflection(e.target.value));
+      }
+    }
+
+    /* =============================================================
+       DRAWER & PICKER
+       ============================================================= */
+    function openDrawer() {
+      DOM.drawerOverlay.classList.add('open');
+      DOM.drawerOverlay.setAttribute('aria-hidden', 'false');
+      DOM.closeDrawer.focus();
+    }
+
+    function closeDrawer() {
+      DOM.drawerOverlay.classList.remove('open');
+      DOM.drawerOverlay.setAttribute('aria-hidden', 'true');
+    }
+
+    function openPicker() {
+      DOM.pickerOverlay.classList.add('open');
+      DOM.closePicker.focus();
+    }
+
+    function closePicker() {
+      DOM.pickerOverlay.classList.remove('open');
+    }
+
+    /* =============================================================
+       EVENT DELEGATION
+       ============================================================= */
+    function initEventListeners() {
+      // Back navigation
+      DOM.backToTopics.addEventListener('click', () => {
+        showView(DOM.viewTopics, DOM.viewModules);
+      });
+
+      DOM.backToModules.addEventListener('click', () => {
+        showView(DOM.viewModules, DOM.viewNotebook);
+      });
+
+      DOM.jumpToLast.addEventListener('click', () => {
+        goToPage(State.pages.length - 1);
+      });
+
+      // Sidebar collapse
+      DOM.collapseSidebar.addEventListener('click', () => {
+        DOM.sidebar.classList.toggle('collapsed');
+        const isCollapsed = DOM.sidebar.classList.contains('collapsed');
+        DOM.collapseSidebar.setAttribute('aria-label', isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+        DOM.collapseSidebar.querySelector('span').textContent = isCollapsed ? '⟩' : '⟨';
+      });
+
+      // Sidebar clicks (event delegation)
+      DOM.sidebarList.addEventListener('click', (e) => {
+        const item = e.target.closest('.sidebar-item');
+        if (item) goToPage(parseInt(item.dataset.index, 10));
+      });
+
+      // Drawer
+      DOM.openDrawer.addEventListener('click', openDrawer);
+      DOM.closeDrawer.addEventListener('click', closeDrawer);
+      DOM.drawerOverlay.addEventListener('click', (e) => {
+        if (e.target === DOM.drawerOverlay) closeDrawer();
+      });
+
+      DOM.drawerList.addEventListener('click', (e) => {
+        const item = e.target.closest('.sidebar-item');
+        if (item) {
+          goToPage(parseInt(item.dataset.index, 10));
+          closeDrawer();
+        }
+      });
+
+      // Page Picker
+      DOM.closePicker.addEventListener('click', closePicker);
+      DOM.pickerOverlay.addEventListener('click', (e) => {
+        if (e.target === DOM.pickerOverlay) closePicker();
+      });
+
+      DOM.pickerGrid.addEventListener('click', (e) => {
+        const item = e.target.closest('.page-picker-item');
+        if (item) {
+          goToPage(parseInt(item.dataset.index, 10));
+          closePicker();
+        }
+      });
+
+      // Keyboard: Escape to close overlays
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (DOM.pickerOverlay.classList.contains('open')) closePicker();
+          if (DOM.drawerOverlay.classList.contains('open')) closeDrawer();
+        }
+      });
+    }
+
+    /* =============================================================
+       INITIALIZATION
+       ============================================================= */
+    function init() {
+      renderTopics();
+      initEventListeners();
+      console.log('[Knotes] Initialized');
+    }
+
+    // Boot
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    // Expose for debugging (remove in production)
+    window.KnotesDebug = { State, DATA, goToPage };
+
+  })();
+  </script>
+
+</body>
+</html>
