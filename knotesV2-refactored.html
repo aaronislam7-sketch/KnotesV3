@@ -7,7 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Caveat:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
   /* =============================================================
@@ -53,7 +53,6 @@
 
     /* Typography */
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    --font-hand: 'Caveat', cursive;
     --font-mono: 'JetBrains Mono', monospace;
 
     /* Spacing */
@@ -67,11 +66,10 @@
     --space-3xl: 64px;
     --space-4xl: 96px;
 
-    /* Layout */
+    /* Layout — minimal constraints, let Webflow wrapper size */
     --header-h: 72px;
     --sidebar-w: 280px;
-    --content-max: 1400px;
-    --gutter: clamp(20px, 5vw, 48px);
+    --gutter: clamp(16px, 4vw, 40px);
 
     /* Effects */
     --radius-sm: 8px;
@@ -140,9 +138,11 @@
   }
 
   .btn-lg {
-    padding: var(--space-md) var(--space-xl);
+    padding: var(--space-lg) var(--space-2xl);
     font-size: 16px;
+    font-weight: 700;
     border-radius: var(--radius-lg);
+    min-width: 140px;
   }
 
   .btn-primary {
@@ -223,23 +223,17 @@
   .view-header .subtitle {
     font-size: clamp(16px, 2vw, 20px);
     color: var(--text-secondary);
-    max-width: 500px;
-    margin: 0 auto;
   }
 
   .view-nav {
     padding: 0 var(--gutter) var(--space-xl);
-    max-width: var(--content-max);
-    margin: 0 auto;
   }
 
-  /* Grid */
+  /* Grid — no max-width, let Webflow wrapper control */
   .grid {
     display: grid;
     gap: var(--space-lg);
     padding: 0 var(--gutter) var(--space-3xl);
-    max-width: var(--content-max);
-    margin: 0 auto;
   }
 
   .grid-topics {
@@ -354,8 +348,6 @@
     display: flex;
     align-items: center;
     gap: var(--space-lg);
-    max-width: var(--content-max);
-    margin: 0 auto;
     padding: var(--space-md) var(--gutter);
     min-height: var(--header-h);
   }
@@ -412,8 +404,6 @@
   .nb-layout {
     display: grid;
     grid-template-columns: var(--sidebar-w) 1fr;
-    max-width: var(--content-max);
-    margin: 0 auto;
     min-height: calc(100vh - var(--header-h));
   }
 
@@ -520,8 +510,7 @@
      KNOTES PAGE SECTIONS
      ============================================================= */
   .knote-page {
-    max-width: 920px;
-    margin: 0 auto;
+    /* No max-width — Webflow wrapper controls sizing */
   }
 
   /* Hero Section */
@@ -607,8 +596,8 @@
   /* Video Thumbnail */
   .knote-video {
     position: relative;
-    width: 200px;
-    height: 130px;
+    width: 220px;
+    aspect-ratio: 16 / 10;
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
     border-radius: var(--radius-lg);
     overflow: hidden;
@@ -656,6 +645,73 @@
     color: white;
     background: rgba(0,0,0,0.7);
     border-radius: 4px;
+  }
+
+  /* Example Note — "Here's one we made earlier" */
+  .example-note {
+    background: linear-gradient(135deg, var(--accent-blue-light) 0%, #eff6ff 100%);
+    border: 2px solid #93c5fd;
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .example-note-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .example-note-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-blue);
+    background: white;
+    border-radius: var(--radius-sm);
+  }
+
+  .example-note-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .example-note-content {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    border-left: 4px solid var(--accent-blue);
+  }
+
+  .example-note-content p {
+    margin: 0;
+  }
+
+  .example-note-content p + p {
+    margin-top: var(--space-sm);
+  }
+
+  .example-note-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .example-note-author {
+    font-weight: 600;
+    color: var(--accent-blue);
   }
 
   /* Section Divider */
@@ -1114,9 +1170,8 @@
   }
 
   .teachback-prompt {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    font-family: var(--font-hand);
     color: var(--text-secondary);
     margin-bottom: var(--space-sm);
   }
@@ -1125,9 +1180,9 @@
     width: 100%;
     min-height: 160px;
     padding: var(--space-lg);
-    font-family: var(--font-hand);
-    font-size: 20px;
-    line-height: 1.6;
+    font-family: var(--font-main);
+    font-size: 16px;
+    line-height: 1.7;
     color: var(--text);
     background: white;
     border: 2px solid #fcd34d;
@@ -1265,7 +1320,6 @@
 
     .knote-video {
       width: 100%;
-      height: 180px;
     }
   }
 
@@ -1415,6 +1469,11 @@
                     time: '12:34',
                     videoId: 'abc123'
                   },
+                  exampleNote: {
+                    author: 'Sarah K.',
+                    date: 'Last week',
+                    content: 'Think of useEffect like a "after the paint dries" hook. React finishes painting the screen, THEN your effect runs. This is why it\'s perfect for things that don\'t affect what the user sees immediately — like fetching data or setting up a subscription.\n\nThe cleanup function is like leaving a room tidy before you go. If you started a timer, stop it. If you subscribed to something, unsubscribe. Otherwise you\'ll have "ghost" effects running from old renders.'
+                  },
                   takeaways: [
                     {
                       title: 'Effects run after render',
@@ -1464,6 +1523,11 @@
                     title: 'Memoization: Cache Expensive Calculations',
                     time: '08:45',
                     videoId: 'def456'
+                  },
+                  exampleNote: {
+                    author: 'Marcus T.',
+                    date: '3 days ago',
+                    content: 'useMemo is like caching the answer to a maths problem. If someone asks you "what\'s 847 × 293?" you\'d calculate it once, write it down, and just read the answer if they ask again. That\'s useMemo.\n\nBut here\'s the catch — writing it down takes effort too! So only use it when the calculation is genuinely expensive. For simple stuff, just let React recalculate.'
                   },
                   takeaways: [
                     {
@@ -1772,6 +1836,23 @@ WHERE c.city = 'London';`
             </div>
           </section>
 
+          <!-- EXAMPLE NOTE — "Here's one we made earlier" -->
+          ${p.exampleNote ? `
+            <section class="example-note">
+              <div class="example-note-header">
+                <span class="example-note-badge">Example</span>
+                <span class="example-note-label">Here's how another learner explained this concept</span>
+              </div>
+              <div class="example-note-content">
+                ${p.exampleNote.content.split('\n\n').map(para => `<p>${esc(para)}</p>`).join('')}
+              </div>
+              <div class="example-note-footer">
+                <span class="example-note-author">${esc(p.exampleNote.author)}</span>
+                <span>${esc(p.exampleNote.date)}</span>
+              </div>
+            </section>
+          ` : ''}
+
           <!-- KEY TAKEAWAYS -->
           <div class="section-divider">
             <span class="section-divider-label">Key Takeaways</span>
@@ -1876,7 +1957,7 @@ WHERE c.city = 'London';`
             <textarea class="teachback-textarea" id="teachback-note" placeholder="In my own words, useEffect is like...">${esc(savedNote)}</textarea>
             <div class="teachback-footer">
               <span class="teachback-tip">Auto-saved as you type</span>
-              <button class="btn btn-secondary" id="copy-note">Copy My Notes</button>
+              <button class="btn btn-secondary btn-lg" id="copy-note">Copy My Notes</button>
             </div>
           </section>
 
