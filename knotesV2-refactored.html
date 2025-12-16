@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Knotes — Your Learning Notebook</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+  /* =============================================================
+     CSS VARIABLES
+     ============================================================= */
+  :root {
+    /* Brand */
+    --brand: #ee7d2d;
+    --brand-dark: #d4691f;
+    --brand-light: #fff4ed;
+    --brand-glow: rgba(238, 125, 45, 0.15);
+
+    /* Accent Colors for Visual Punch */
+    --accent-purple: #7c3aed;
+    --accent-purple-light: #ede9fe;
+    --accent-teal: #0d9488;
+    --accent-teal-light: #ccfbf1;
+    --accent-blue: #2563eb;
+    --accent-blue-light: #dbeafe;
+
+    /* Surfaces */
+    --surface: #ffffff;
+    --surface-warm: #fffbf7;
+    --surface-elevated: #ffffff;
+    --bg: #f8f6f3;
+    --bg-dark: #1a1a1a;
+
+    /* Text */
+    --text: #1a1a1a;
+    --text-secondary: #4a4a4a;
+    --text-muted: #777777;
+    --text-inverse: #ffffff;
+
+    /* Borders */
+    --border: #e5e2de;
+    --border-light: #f0ede9;
+
+    /* Feedback */
+    --success: #059669;
+    --success-light: #d1fae5;
+    --error: #dc2626;
+    --error-light: #fee2e2;
+
+    /* Typography */
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Spacing */
+    --space-2xs: 4px;
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+    --space-3xl: 64px;
+    --space-4xl: 96px;
+
+    /* Layout — minimal constraints, let Webflow wrapper size */
+    --header-h: 72px;
+    --sidebar-w: 280px;
+    --gutter: clamp(16px, 4vw, 40px);
+
+    /* Effects */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+    --shadow-glow: 0 0 0 4px var(--brand-glow);
+
+    --transition: 200ms ease;
+    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* =============================================================
+     RESET
+     ============================================================= */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { height: 100%; scroll-behavior: smooth; }
+  body {
+    min-height: 100%;
+    font-family: var(--font-main);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  img, video, svg { display: block; max-width: 100%; }
+  button { font: inherit; cursor: pointer; border: none; background: none; }
+  a { color: inherit; text-decoration: none; }
+
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 3px;
+  }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  .hidden { display: none !important; }
+
+  .fade-out {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+
+  /* =============================================================
+     BUTTONS
+     ============================================================= */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-lg);
+    font-weight: 600;
+    font-size: 15px;
+    border-radius: var(--radius-md);
+    transition: all var(--transition);
+    white-space: nowrap;
+  }
+
+  .btn-lg {
+    padding: var(--space-lg) var(--space-2xl);
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: var(--radius-lg);
+    min-width: 140px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+    color: var(--text-inverse);
+    box-shadow: 0 2px 8px rgba(238, 125, 45, 0.3);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(238, 125, 45, 0.4);
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 2px solid var(--border);
+  }
+  .btn-secondary:hover {
+    border-color: var(--brand);
+    color: var(--brand);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+  }
+  .btn-ghost:hover {
+    background: var(--border-light);
+    color: var(--text);
+  }
+
+  .btn-icon {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    font-size: 20px;
+  }
+
+  /* =============================================================
+     TOPIC & MODULE CARDS
+     ============================================================= */
+  .view { min-height: 100vh; }
+
+  .view-header {
+    text-align: center;
+    padding: var(--space-4xl) var(--gutter) var(--space-2xl);
+    background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+  }
+
+  .view-header-label {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-md);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--brand);
+    background: var(--brand-light);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-md);
+  }
+
+  .view-header h1 {
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: var(--space-md);
+  }
+
+  .view-header h1 .highlight {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--accent-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .view-header .subtitle {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--text-secondary);
+  }
+
+  .view-nav {
+    padding: 0 var(--gutter) var(--space-xl);
+  }
+
+  /* Grid — no max-width, let Webflow wrapper control */
+  .grid {
+    display: grid;
+    gap: var(--space-lg);
+    padding: 0 var(--gutter) var(--space-3xl);
+  }
+
+  .grid-topics {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+
+  .grid-modules {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  }
+
+  /* Cards */
+  .card {
+    position: relative;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    transition: all var(--transition);
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--brand) 0%, var(--accent-purple) 100%);
+    opacity: 0;
+    transition: opacity var(--transition);
+  }
+
+  .card-interactive { cursor: pointer; }
+
+  .card-interactive:hover {
+    border-color: var(--brand);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-interactive:hover::before {
+    opacity: 1;
+  }
+
+  .card-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--brand);
+    background: var(--brand-light);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+  }
+
+  .card-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: var(--space-xs);
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+    line-height: 1.5;
+  }
+
+  .card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-light);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs) var(--space-sm);
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+  }
+
+  .tag-accent {
+    background: var(--accent-purple-light);
+    color: var(--accent-purple);
+  }
+
+  /* =============================================================
+     NOTEBOOK HEADER
+     ============================================================= */
+  .nb-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nb-header-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-md) var(--gutter);
+    min-height: var(--header-h);
+  }
+
+  .nb-header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .nb-header-center {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .breadcrumb-item { color: var(--text-muted); }
+  .breadcrumb-sep { color: var(--border); }
+  .breadcrumb-current {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .nb-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .progress-ring {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-md);
+    background: var(--success-light);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--success);
+  }
+
+  .menu-toggle { display: none; }
+
+  /* =============================================================
+     NOTEBOOK LAYOUT
+     ============================================================= */
+  .nb-layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr;
+    min-height: calc(100vh - var(--header-h));
+  }
+
+  /* Sidebar */
+  .nb-sidebar {
+    position: sticky;
+    top: var(--header-h);
+    height: calc(100vh - var(--header-h));
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: var(--space-lg);
+  }
+
+  .sidebar-section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .sidebar-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: var(--space-sm);
+    padding: 0 var(--space-sm);
+  }
+
+  .sidebar-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition);
+    border: 2px solid transparent;
+  }
+
+  .sidebar-item:hover {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .sidebar-item.active {
+    background: var(--brand-light);
+    color: var(--brand);
+    border-color: var(--brand);
+    font-weight: 600;
+  }
+
+  .sidebar-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+  }
+
+  .sidebar-item.active .sidebar-num {
+    background: var(--brand);
+    color: white;
+  }
+
+  .sidebar-item.completed .sidebar-num::after {
+    content: '✓';
+  }
+
+  .sidebar-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* =============================================================
+     MAIN CONTENT AREA
+     ============================================================= */
+  .nb-main {
+    background: var(--bg);
+    min-width: 0;
+  }
+
+  .nb-content {
+    padding: var(--space-2xl) var(--gutter) var(--space-4xl);
+  }
+
+  /* =============================================================
+     KNOTES PAGE SECTIONS
+     ============================================================= */
+  .knote-page {
+    /* No max-width — Webflow wrapper controls sizing */
+  }
+
+  /* Hero Section */
+  .knote-hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-warm) 100%);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    margin-bottom: var(--space-2xl);
+    overflow: hidden;
+  }
+
+  .knote-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--brand-glow) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .knote-hero-content {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .knote-hero-main {
+    min-width: 0;
+  }
+
+  .knote-label {
+    display: inline-block;
+    padding: var(--space-2xs) var(--space-sm);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-purple);
+    background: var(--accent-purple-light);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-md);
+  }
+
+  .knote-title {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    margin-bottom: var(--space-md);
+  }
+
+  .knote-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .knote-meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .knote-meta-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border-radius: 4px;
+    font-size: 11px;
+  }
+
+  /* Video Thumbnail */
+  .knote-video {
+    position: relative;
+    width: 220px;
+    aspect-ratio: 16 / 10;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform var(--transition);
+  }
+
+  .knote-video:hover {
+    transform: scale(1.03);
+  }
+
+  .knote-video-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    background: var(--brand);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(238, 125, 45, 0.4);
+  }
+
+  .knote-video-play::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 14px solid white;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    margin-left: 3px;
+  }
+
+  .knote-video-time {
+    position: absolute;
+    bottom: var(--space-sm);
+    right: var(--space-sm);
+    padding: var(--space-2xs) var(--space-xs);
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    background: rgba(0,0,0,0.7);
+    border-radius: 4px;
+  }
+
+  /* Example Note — "Here's one we made earlier" */
+  .example-note {
+    background: linear-gradient(135deg, var(--accent-blue-light) 0%, #eff6ff 100%);
+    border: 2px solid #93c5fd;
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .example-note-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .example-note-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-blue);
+    background: white;
+    border-radius: var(--radius-sm);
+  }
+
+  .example-note-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .example-note-content {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    border-left: 4px solid var(--accent-blue);
+  }
+
+  .example-note-content p {
+    margin: 0;
+  }
+
+  .example-note-content p + p {
+    margin-top: var(--space-sm);
+  }
+
+  .example-note-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .example-note-author {
+    font-weight: 600;
+    color: var(--accent-blue);
+  }
+
+  /* Section Divider */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin: var(--space-2xl) 0;
+  }
+
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  .section-divider-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+  }
+
+  /* =============================================================
+     KEY TAKEAWAYS
+     ============================================================= */
+  .takeaways {
+    display: grid;
+    gap: var(--space-md);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .takeaway {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition);
+  }
+
+  .takeaway:hover {
+    border-color: var(--brand);
+    box-shadow: var(--shadow-md);
+  }
+
+  .takeaway-num {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: white;
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+    border-radius: var(--radius-sm);
+  }
+
+  .takeaway-content h4 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: var(--space-2xs);
+  }
+
+  .takeaway-content p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* =============================================================
+     CODE BLOCK
+     ============================================================= */
+  .code-section {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .code-block {
+    background: #1e1e2e;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-lg);
+    background: #14141f;
+    border-bottom: 1px solid #2a2a3a;
+  }
+
+  .code-lang {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .code-copy {
+    font-size: 13px;
+    color: #888;
+    background: transparent;
+    border: 1px solid #3a3a4a;
+    border-radius: var(--radius-sm);
+    padding: var(--space-2xs) var(--space-sm);
+    transition: all var(--transition);
+  }
+
+  .code-copy:hover {
+    color: white;
+    border-color: #5a5a6a;
+  }
+
+  .code-content {
+    padding: var(--space-lg);
+    overflow-x: auto;
+  }
+
+  .code-content pre {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.7;
+    color: #cdd6f4;
+  }
+
+  .code-content .keyword { color: #cba6f7; }
+  .code-content .function { color: #89b4fa; }
+  .code-content .string { color: #a6e3a1; }
+  .code-content .comment { color: #6c7086; font-style: italic; }
+  .code-content .number { color: #fab387; }
+
+  /* =============================================================
+     QUIZ SECTION
+     ============================================================= */
+  .quiz-section {
+    background: linear-gradient(135deg, var(--accent-purple-light) 0%, #f5f3ff 100%);
+    border: 2px solid #ddd6fe;
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .quiz-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .quiz-header-text h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent-purple);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .quiz-header-text p {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .quiz-question {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: var(--space-lg);
+    line-height: 1.4;
+  }
+
+  .quiz-options {
+    display: grid;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+  }
+
+  .quiz-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: left;
+    transition: all var(--transition);
+  }
+
+  .quiz-option:hover:not(:disabled) {
+    border-color: var(--accent-purple);
+    background: white;
+  }
+
+  .quiz-option-marker {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    transition: all var(--transition);
+  }
+
+  .quiz-option:hover .quiz-option-marker {
+    background: var(--accent-purple-light);
+    color: var(--accent-purple);
+  }
+
+  .quiz-option.selected {
+    border-color: var(--accent-purple);
+    background: var(--accent-purple-light);
+  }
+
+  .quiz-option.selected .quiz-option-marker {
+    background: var(--accent-purple);
+    color: white;
+  }
+
+  .quiz-option.correct {
+    border-color: var(--success);
+    background: var(--success-light);
+  }
+
+  .quiz-option.correct .quiz-option-marker {
+    background: var(--success);
+    color: white;
+  }
+
+  .quiz-option.incorrect {
+    border-color: var(--error);
+    background: var(--error-light);
+  }
+
+  .quiz-option.incorrect .quiz-option-marker {
+    background: var(--error);
+    color: white;
+  }
+
+  .quiz-feedback {
+    padding: var(--space-lg);
+    background: white;
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--success);
+    display: none;
+  }
+
+  .quiz-feedback.show {
+    display: block;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .quiz-feedback h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--success);
+    margin-bottom: var(--space-xs);
+  }
+
+  .quiz-feedback p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* =============================================================
+     CONCEPTS & CONNECTIONS
+     ============================================================= */
+  .concepts-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-2xl);
+  }
+
+  @media (max-width: 700px) {
+    .concepts-section { grid-template-columns: 1fr; }
+  }
+
+  .concept-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .concept-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: var(--space-md);
+  }
+
+  .concept-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .concept-tag {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--accent-teal-light);
+    color: var(--accent-teal);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .concept-tag:hover {
+    background: var(--accent-teal);
+    color: white;
+  }
+
+  .recap-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .recap-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+  }
+
+  .recap-label { font-weight: 600; }
+
+  .recap-status {
+    font-size: 12px;
+    font-weight: 700;
+    padding: var(--space-2xs) var(--space-sm);
+    border-radius: 4px;
+  }
+
+  .recap-status.review {
+    background: var(--brand-light);
+    color: var(--brand);
+  }
+
+  .recap-status.mastered {
+    background: var(--success-light);
+    color: var(--success);
+  }
+
+  /* =============================================================
+     TEACH-BACK SECTION
+     ============================================================= */
+  .teachback {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 2px solid #fcd34d;
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .teachback-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+  }
+
+  .teachback-icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+  }
+
+  .teachback-intro h3 {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: var(--space-xs);
+  }
+
+  .teachback-intro p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .teachback-why {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+  }
+
+  .teachback-why h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: var(--space-sm);
+  }
+
+  .teachback-why ul {
+    list-style: none;
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .teachback-why li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .teachback-why li::before {
+    content: '→';
+    color: var(--brand);
+    font-weight: 700;
+  }
+
+  .teachback-prompt {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+  }
+
+  .teachback-textarea {
+    width: 100%;
+    min-height: 160px;
+    padding: var(--space-lg);
+    font-family: var(--font-main);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text);
+    background: white;
+    border: 2px solid #fcd34d;
+    border-radius: var(--radius-md);
+    resize: vertical;
+    transition: all var(--transition);
+  }
+
+  .teachback-textarea:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .teachback-textarea::placeholder {
+    color: var(--text-muted);
+  }
+
+  .teachback-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--space-md);
+  }
+
+  .teachback-tip {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* =============================================================
+     PAGE NAVIGATION
+     ============================================================= */
+  .page-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    padding: var(--space-xl);
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xl);
+  }
+
+  .page-nav-info {
+    text-align: center;
+  }
+
+  .page-nav-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .page-nav-current {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  /* =============================================================
+     MOBILE DRAWER
+     ============================================================= */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition);
+  }
+
+  .drawer-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .drawer-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(340px, 90vw);
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-100%);
+    transition: transform var(--transition-slow);
+    z-index: 201;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer-overlay.open .drawer-panel {
+    transform: translateX(0);
+  }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .drawer-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-lg);
+  }
+
+  /* =============================================================
+     RESPONSIVE
+     ============================================================= */
+  @media (max-width: 900px) {
+    .nb-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .nb-sidebar {
+      display: none;
+    }
+
+    .menu-toggle {
+      display: inline-flex;
+    }
+
+    .knote-hero-content {
+      grid-template-columns: 1fr;
+    }
+
+    .knote-video {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .grid-topics,
+    .grid-modules {
+      grid-template-columns: 1fr;
+    }
+
+    .page-nav {
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .page-nav > .btn {
+      width: 100%;
+    }
+  }
+  </style>
+</head>
+
+<body>
+
+  <a href="#main-content" class="sr-only">Skip to main content</a>
+
+  <!-- ===== VIEW: TOPICS ===== -->
+  <section id="view-topics" class="view" aria-labelledby="topics-heading">
+    <header class="view-header">
+      <span class="view-header-label">Knotes</span>
+      <h1 id="topics-heading">Your <span class="highlight">Learning</span> Journey</h1>
+      <p class="subtitle">Select a topic to explore structured notes, key concepts, and self-checks</p>
+    </header>
+    <div class="grid grid-topics" id="topics-grid" role="list"></div>
+  </section>
+
+  <!-- ===== VIEW: MODULES ===== -->
+  <section id="view-modules" class="view hidden" aria-labelledby="modules-heading">
+    <header class="view-header">
+      <span class="view-header-label" id="modules-topic-label">Topic</span>
+      <h1 id="modules-heading">Choose Your <span class="highlight">Module</span></h1>
+      <p class="subtitle">Each module contains structured lessons with notes, code, and quizzes</p>
+    </header>
+    <nav class="view-nav">
+      <button id="back-to-topics" class="btn btn-ghost" aria-label="Back to topics">
+        ← Back to Topics
+      </button>
+    </nav>
+    <div class="grid grid-modules" id="modules-grid" role="list"></div>
+  </section>
+
+  <!-- ===== VIEW: NOTEBOOK ===== -->
+  <section id="view-notebook" class="view hidden">
+
+    <header class="nb-header">
+      <div class="nb-header-inner">
+        <div class="nb-header-left">
+          <button id="back-to-modules" class="btn btn-icon btn-secondary" aria-label="Back">←</button>
+          <button id="open-drawer" class="btn btn-icon btn-secondary menu-toggle" aria-label="Menu">☰</button>
+        </div>
+
+        <nav class="nb-header-center">
+          <div class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb-item" id="breadcrumb-topic">Topic</span>
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="breadcrumb-current" id="breadcrumb-module">Module</span>
+          </div>
+        </nav>
+
+        <div class="nb-header-right">
+          <div class="progress-ring" id="progress-ring">
+            <span id="progress-text">1 of 3</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="nb-layout">
+      <aside class="nb-sidebar" id="nb-sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-label">Pages</div>
+          <ul class="sidebar-list" id="sidebar-list" role="list"></ul>
+        </div>
+      </aside>
+
+      <main class="nb-main" id="main-content">
+        <div class="nb-content" id="knotes-mount"></div>
+      </main>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div class="drawer-overlay" id="drawer-overlay" aria-hidden="true">
+      <div class="drawer-panel" role="dialog">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="drawer-title">Pages</h2>
+          <button id="close-drawer" class="btn btn-icon btn-ghost" aria-label="Close">✕</button>
+        </div>
+        <nav class="drawer-body">
+          <ul class="sidebar-list" id="drawer-list" role="list"></ul>
+        </nav>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+  (function() {
+    'use strict';
+
+    /* =============================================================
+       CONFIG & STATE
+       ============================================================= */
+    const CONFIG = {
+      TRANSITION_MS: 280,
+      STORAGE_KEY: 'knotes'
+    };
+
+    const State = {
+      topic: null,
+      module: null,
+      pageIndex: 0,
+      pages: []
+    };
+
+    /* =============================================================
+       DATA — Replace with API/CMS fetch
+       ============================================================= */
+    const DATA = {
+      topics: [
+        {
+          id: 'web',
+          title: 'Web Development',
+          description: 'Master JavaScript, React hooks, and modern frontend patterns with hands-on examples',
+          tags: ['JavaScript', 'React', 'Hooks'],
+          modules: [
+            {
+              id: 'react-hooks',
+              title: 'React Hooks Deep Dive',
+              description: 'Understand the mental model behind hooks and when to use each one effectively',
+              pageCount: 3,
+              pages: [
+                {
+                  id: 'useeffect',
+                  label: 'useEffect Fundamentals',
+                  scene: {
+                    title: 'Understanding useEffect: The Gateway to Side Effects',
+                    time: '12:34',
+                    videoId: 'abc123'
+                  },
+                  exampleNote: {
+                    author: 'Sarah K.',
+                    date: 'Last week',
+                    content: 'Think of useEffect like a "after the paint dries" hook. React finishes painting the screen, THEN your effect runs. This is why it\'s perfect for things that don\'t affect what the user sees immediately — like fetching data or setting up a subscription.\n\nThe cleanup function is like leaving a room tidy before you go. If you started a timer, stop it. If you subscribed to something, unsubscribe. Otherwise you\'ll have "ghost" effects running from old renders.'
+                  },
+                  takeaways: [
+                    {
+                      title: 'Effects run after render',
+                      detail: 'React guarantees the DOM is updated before running effects. This makes effects ideal for syncing with external systems like APIs, subscriptions, or the browser.'
+                    },
+                    {
+                      title: 'Cleanup prevents memory leaks',
+                      detail: 'Return a cleanup function to unsubscribe, clear timers, or reset state. React calls this before the component unmounts or before re-running the effect.'
+                    },
+                    {
+                      title: 'Dependencies control re-runs',
+                      detail: 'The dependency array tells React when to re-run your effect. Empty array = once on mount. No array = every render. Values = when they change.'
+                    }
+                  ],
+                  code: {
+                    language: 'javascript',
+                    snippet: `useEffect(() => {
+  // This runs after every render
+  const subscription = api.subscribe(userId);
+
+  // Cleanup: runs before unmount or re-run
+  return () => {
+    subscription.unsubscribe();
+  };
+}, [userId]); // Re-run when userId changes`
+                  },
+                  quiz: {
+                    question: 'When does React call your cleanup function?',
+                    options: [
+                      { id: 'a', text: 'Before the component mounts', correct: false },
+                      { id: 'b', text: 'Before unmount and before re-running the effect', correct: true },
+                      { id: 'c', text: 'Only when you call it manually', correct: false },
+                      { id: 'd', text: 'After every render completes', correct: false }
+                    ],
+                    explanation: 'React calls cleanup before unmounting AND before re-running the effect with new dependencies. This ensures you always clean up the previous effect before setting up the next one.'
+                  },
+                  concepts: ['Side Effects', 'Lifecycle', 'Subscriptions', 'Cleanup'],
+                  recap: [
+                    { id: 'q1', label: 'Cleanup timing', status: 'review' }
+                  ],
+                  xp: 15
+                },
+                {
+                  id: 'usememo',
+                  label: 'useMemo & Performance',
+                  scene: {
+                    title: 'Memoization: Cache Expensive Calculations',
+                    time: '08:45',
+                    videoId: 'def456'
+                  },
+                  exampleNote: {
+                    author: 'Marcus T.',
+                    date: '3 days ago',
+                    content: 'useMemo is like caching the answer to a maths problem. If someone asks you "what\'s 847 × 293?" you\'d calculate it once, write it down, and just read the answer if they ask again. That\'s useMemo.\n\nBut here\'s the catch — writing it down takes effort too! So only use it when the calculation is genuinely expensive. For simple stuff, just let React recalculate.'
+                  },
+                  takeaways: [
+                    {
+                      title: 'useMemo caches computed values',
+                      detail: 'Wrap expensive calculations in useMemo to avoid re-computing on every render. React will only recalculate when dependencies change.'
+                    },
+                    {
+                      title: 'Don\'t memoize everything',
+                      detail: 'Memoization has overhead. Only use it for genuinely expensive operations or when passing objects to memoized children.'
+                    }
+                  ],
+                  code: {
+                    language: 'javascript',
+                    snippet: `const sortedItems = useMemo(() => {
+  // Expensive: only recalculate when items change
+  return items
+    .filter(item => item.active)
+    .sort((a, b) => a.priority - b.priority);
+}, [items]);`
+                  },
+                  quiz: {
+                    question: 'What does useMemo cache?',
+                    options: [
+                      { id: 'a', text: 'The function itself', correct: false },
+                      { id: 'b', text: 'The computed return value', correct: true },
+                      { id: 'c', text: 'The component\'s state', correct: false }
+                    ],
+                    explanation: 'useMemo caches the return value of your function. useCallback (not useMemo) is for caching the function identity itself.'
+                  },
+                  concepts: ['Performance', 'Memoization', 'Re-renders'],
+                  recap: [],
+                  xp: 12
+                },
+                {
+                  id: 'usecallback',
+                  label: 'useCallback Patterns',
+                  scene: {
+                    title: 'Stable Function References with useCallback',
+                    time: '10:22',
+                    videoId: 'ghi789'
+                  },
+                  takeaways: [
+                    {
+                      title: 'useCallback memoizes function identity',
+                      detail: 'Without useCallback, a new function is created every render. This breaks React.memo and causes unnecessary child re-renders.'
+                    },
+                    {
+                      title: 'Pair with React.memo',
+                      detail: 'useCallback is most useful when passing callbacks to memoized child components that rely on referential equality to skip renders.'
+                    }
+                  ],
+                  code: {
+                    language: 'javascript',
+                    snippet: `const handleClick = useCallback((id) => {
+  setItems(prev => prev.filter(item => item.id !== id));
+}, []); // Stable reference: never recreated
+
+// Child only re-renders if items change, not on every parent render
+<MemoizedList items={items} onDelete={handleClick} />`
+                  },
+                  quiz: {
+                    question: 'When is useCallback most beneficial?',
+                    options: [
+                      { id: 'a', text: 'For all event handlers', correct: false },
+                      { id: 'b', text: 'When passing callbacks to memoized children', correct: true },
+                      { id: 'c', text: 'For async functions only', correct: false }
+                    ],
+                    explanation: 'useCallback shines when you pass callbacks to React.memo wrapped children. Without it, new function references break memoization.'
+                  },
+                  concepts: ['useCallback', 'React.memo', 'Referential Equality'],
+                  recap: [
+                    { id: 'q2', label: 'When to use', status: 'mastered' }
+                  ],
+                  xp: 12
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'databases',
+          title: 'Databases',
+          description: 'Learn SQL, data modeling, and database design principles from the ground up',
+          tags: ['SQL', 'PostgreSQL', 'Design'],
+          modules: [
+            {
+              id: 'db-design',
+              title: 'Database Design Fundamentals',
+              description: 'Master normalization, relationships, and schema design',
+              pageCount: 2,
+              pages: [
+                {
+                  id: 'normalization',
+                  label: 'Normalization',
+                  scene: { title: 'Third Normal Form Explained', time: '15:00' },
+                  takeaways: [
+                    { title: 'Eliminate redundancy', detail: 'Normalization reduces duplicate data, making updates safer and storage more efficient.' },
+                    { title: 'Preserve dependencies', detail: '3NF ensures all attributes depend only on the primary key, not on other non-key attributes.' }
+                  ],
+                  code: {
+                    language: 'sql',
+                    snippet: `-- Bad: denormalized (city stored with every order)
+SELECT * FROM orders WHERE customer_city = 'London';
+
+-- Good: normalized (join to get city)
+SELECT o.* FROM orders o
+JOIN customers c ON o.customer_id = c.id
+WHERE c.city = 'London';`
+                  },
+                  quiz: {
+                    question: 'What problem does 3NF specifically solve?',
+                    options: [
+                      { id: 'a', text: 'Slow query performance', correct: false },
+                      { id: 'b', text: 'Transitive dependencies', correct: true },
+                      { id: 'c', text: 'Missing primary keys', correct: false }
+                    ],
+                    explanation: '3NF eliminates transitive dependencies where a non-key attribute depends on another non-key attribute.'
+                  },
+                  concepts: ['3NF', 'Data Integrity', 'Schema Design'],
+                  recap: [],
+                  xp: 10
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    /* =============================================================
+       DOM REFS
+       ============================================================= */
+    const $ = {
+      viewTopics: document.getElementById('view-topics'),
+      viewModules: document.getElementById('view-modules'),
+      viewNotebook: document.getElementById('view-notebook'),
+      topicsGrid: document.getElementById('topics-grid'),
+      modulesGrid: document.getElementById('modules-grid'),
+      modulesTopicLabel: document.getElementById('modules-topic-label'),
+      backToTopics: document.getElementById('back-to-topics'),
+      backToModules: document.getElementById('back-to-modules'),
+      breadcrumbTopic: document.getElementById('breadcrumb-topic'),
+      breadcrumbModule: document.getElementById('breadcrumb-module'),
+      progressText: document.getElementById('progress-text'),
+      sidebarList: document.getElementById('sidebar-list'),
+      drawerOverlay: document.getElementById('drawer-overlay'),
+      drawerList: document.getElementById('drawer-list'),
+      drawerTitle: document.getElementById('drawer-title'),
+      openDrawer: document.getElementById('open-drawer'),
+      closeDrawer: document.getElementById('close-drawer'),
+      knotesMount: document.getElementById('knotes-mount')
+    };
+
+    /* =============================================================
+       UTILITIES
+       ============================================================= */
+    function esc(str) {
+      const d = document.createElement('div');
+      d.textContent = str || '';
+      return d.innerHTML;
+    }
+
+    function storageKey(pageId) {
+      return `${CONFIG.STORAGE_KEY}:${State.module?.id}:${pageId}:note`;
+    }
+
+    function debounce(fn, ms) {
+      let t;
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+    }
+
+    function showView(show, hide) {
+      hide.classList.add('fade-out');
+      setTimeout(() => {
+        hide.classList.add('hidden');
+        hide.classList.remove('fade-out');
+        show.classList.remove('hidden');
+        show.querySelector('h1, h2')?.focus();
+      }, CONFIG.TRANSITION_MS);
+    }
+
+    /* =============================================================
+       TOPICS
+       ============================================================= */
+    function renderTopics() {
+      $.topicsGrid.innerHTML = DATA.topics.map((t, i) => `
+        <article class="card card-interactive" role="listitem" tabindex="0" data-id="${t.id}" aria-label="${esc(t.title)}">
+          <div class="card-number">${i + 1}</div>
+          <h2 class="card-title">${esc(t.title)}</h2>
+          <p class="card-desc">${esc(t.description)}</p>
+          <div class="card-footer">
+            ${t.tags.map(tag => `<span class="tag">${esc(tag)}</span>`).join('')}
+          </div>
+        </article>
+      `).join('');
+
+      $.topicsGrid.querySelectorAll('.card').forEach(card => {
+        const handler = () => openModules(card.dataset.id);
+        card.addEventListener('click', handler);
+        card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); }});
+      });
+    }
+
+    function openModules(topicId) {
+      State.topic = DATA.topics.find(t => t.id === topicId);
+      if (!State.topic) return;
+
+      $.modulesTopicLabel.textContent = State.topic.title;
+      renderModules();
+      showView($.viewModules, $.viewTopics);
+    }
+
+    /* =============================================================
+       MODULES
+       ============================================================= */
+    function renderModules() {
+      $.modulesGrid.innerHTML = State.topic.modules.map((m, i) => `
+        <article class="card card-interactive" role="listitem" tabindex="0" data-id="${m.id}" aria-label="${esc(m.title)}">
+          <div class="card-number">${i + 1}</div>
+          <h2 class="card-title">${esc(m.title)}</h2>
+          <p class="card-desc">${esc(m.description)}</p>
+          <div class="card-footer">
+            <span class="tag tag-accent">${m.pages?.length || 0} pages</span>
+          </div>
+        </article>
+      `).join('');
+
+      $.modulesGrid.querySelectorAll('.card').forEach(card => {
+        const handler = () => openNotebook(card.dataset.id);
+        card.addEventListener('click', handler);
+        card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); }});
+      });
+    }
+
+    /* =============================================================
+       NOTEBOOK
+       ============================================================= */
+    function openNotebook(moduleId) {
+      State.module = State.topic.modules.find(m => m.id === moduleId);
+      if (!State.module) return;
+
+      State.pages = State.module.pages || [];
+      State.pageIndex = 0;
+
+      $.breadcrumbTopic.textContent = State.topic.title;
+      $.breadcrumbModule.textContent = State.module.title;
+      $.drawerTitle.textContent = State.module.title;
+
+      renderSidebar();
+      renderPage();
+      showView($.viewNotebook, $.viewModules);
+    }
+
+    function renderSidebar() {
+      const html = State.pages.map((p, i) => `
+        <li>
+          <button class="sidebar-item${i === State.pageIndex ? ' active' : ''}" data-idx="${i}" aria-current="${i === State.pageIndex ? 'page' : 'false'}">
+            <span class="sidebar-num">${i + 1}</span>
+            <span class="sidebar-text">${esc(p.label)}</span>
+          </button>
+        </li>
+      `).join('');
+
+      $.sidebarList.innerHTML = html;
+      $.drawerList.innerHTML = html;
+      $.progressText.textContent = `${State.pageIndex + 1} of ${State.pages.length}`;
+    }
+
+    function goTo(idx) {
+      if (idx < 0 || idx >= State.pages.length) return;
+      State.pageIndex = idx;
+      renderSidebar();
+      renderPage();
+      closeDrawer();
+    }
+
+    /* =============================================================
+       RENDER PAGE CONTENT
+       ============================================================= */
+    function renderPage() {
+      const p = State.pages[State.pageIndex];
+      if (!p) return;
+
+      const savedNote = localStorage.getItem(storageKey(p.id)) || '';
+
+      $.knotesMount.innerHTML = `
+        <div class="knote-page">
+
+          <!-- HERO -->
+          <section class="knote-hero">
+            <div class="knote-hero-content">
+              <div class="knote-hero-main">
+                <span class="knote-label">Page ${State.pageIndex + 1} of ${State.pages.length}</span>
+                <h1 class="knote-title">${esc(p.scene?.title || p.label)}</h1>
+                <div class="knote-meta">
+                  ${p.scene?.time ? `<span class="knote-meta-item"><span class="knote-meta-icon">▶</span> ${esc(p.scene.time)}</span>` : ''}
+                  <span class="knote-meta-item"><span class="knote-meta-icon">★</span> +${p.xp || 0} XP</span>
+                </div>
+              </div>
+              ${p.scene?.time ? `
+                <div class="knote-video" role="button" tabindex="0" aria-label="Play video">
+                  <div class="knote-video-play"></div>
+                  <span class="knote-video-time">${esc(p.scene.time)}</span>
+                </div>
+              ` : ''}
+            </div>
+          </section>
+
+          <!-- EXAMPLE NOTE — "Here's one we made earlier" -->
+          ${p.exampleNote ? `
+            <section class="example-note">
+              <div class="example-note-header">
+                <span class="example-note-badge">Example</span>
+                <span class="example-note-label">Here's how another learner explained this concept</span>
+              </div>
+              <div class="example-note-content">
+                ${p.exampleNote.content.split('\n\n').map(para => `<p>${esc(para)}</p>`).join('')}
+              </div>
+              <div class="example-note-footer">
+                <span class="example-note-author">${esc(p.exampleNote.author)}</span>
+                <span>${esc(p.exampleNote.date)}</span>
+              </div>
+            </section>
+          ` : ''}
+
+          <!-- KEY TAKEAWAYS -->
+          <div class="section-divider">
+            <span class="section-divider-label">Key Takeaways</span>
+          </div>
+
+          <div class="takeaways">
+            ${(p.takeaways || []).map((t, i) => `
+              <div class="takeaway">
+                <div class="takeaway-num">${i + 1}</div>
+                <div class="takeaway-content">
+                  <h4>${esc(t.title)}</h4>
+                  <p>${esc(t.detail)}</p>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- CODE BLOCK -->
+          ${p.code ? `
+            <div class="code-section">
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">${esc(p.code.language)}</span>
+                  <button class="code-copy" id="copy-code">Copy</button>
+                </div>
+                <div class="code-content">
+                  <pre>${highlightCode(p.code.snippet, p.code.language)}</pre>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- QUIZ -->
+          ${p.quiz ? `
+            <section class="quiz-section" id="quiz-section">
+              <div class="quiz-header">
+                <div class="quiz-icon">?</div>
+                <div class="quiz-header-text">
+                  <h3>Quick Check</h3>
+                  <p>Test your understanding before moving on</p>
+                </div>
+              </div>
+              <p class="quiz-question">${esc(p.quiz.question)}</p>
+              <div class="quiz-options" id="quiz-options">
+                ${p.quiz.options.map((opt, i) => `
+                  <button class="quiz-option" data-idx="${i}" data-correct="${opt.correct}">
+                    <span class="quiz-option-marker">${String.fromCharCode(65 + i)}</span>
+                    <span>${esc(opt.text)}</span>
+                  </button>
+                `).join('')}
+              </div>
+              <div class="quiz-feedback" id="quiz-feedback">
+                <h4>Correct!</h4>
+                <p>${esc(p.quiz.explanation)}</p>
+              </div>
+            </section>
+          ` : ''}
+
+          <!-- CONCEPTS & RECAP -->
+          <div class="concepts-section">
+            <div class="concept-card">
+              <h4>Linked Concepts</h4>
+              <div class="concept-tags">
+                ${(p.concepts || []).map(c => `<span class="concept-tag">${esc(c)}</span>`).join('')}
+              </div>
+            </div>
+            <div class="concept-card">
+              <h4>Quiz Recap</h4>
+              ${p.recap?.length ? `
+                <div class="recap-list">
+                  ${p.recap.map(r => `
+                    <div class="recap-item">
+                      <span class="recap-label">${esc(r.label)}</span>
+                      <span class="recap-status ${r.status}">${r.status}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : `<p style="color: var(--text-muted); font-size: 14px;">Complete quizzes to track mastery</p>`}
+            </div>
+          </div>
+
+          <!-- TEACH-BACK -->
+          <section class="teachback">
+            <div class="teachback-header">
+              <div class="teachback-icon">✎</div>
+              <div class="teachback-intro">
+                <h3>Teach It Back</h3>
+                <p>Explaining concepts in your own words is proven to boost retention by up to 50%. Take 2 minutes to solidify what you learned.</p>
+              </div>
+            </div>
+
+            <div class="teachback-why">
+              <h4>Why this works:</h4>
+              <ul>
+                <li>Forces you to organize your thoughts</li>
+                <li>Reveals gaps in understanding</li>
+                <li>Creates a personal reference for revision</li>
+              </ul>
+            </div>
+
+            <p class="teachback-prompt">Imagine explaining this to a friend who's never seen React...</p>
+            <textarea class="teachback-textarea" id="teachback-note" placeholder="In my own words, useEffect is like...">${esc(savedNote)}</textarea>
+            <div class="teachback-footer">
+              <span class="teachback-tip">Auto-saved as you type</span>
+              <button class="btn btn-secondary btn-lg" id="copy-note">Copy My Notes</button>
+            </div>
+          </section>
+
+          <!-- NAV -->
+          <nav class="page-nav">
+            <button class="btn btn-secondary btn-lg" id="prev-page" ${State.pageIndex === 0 ? 'disabled' : ''}>← Previous</button>
+            <div class="page-nav-info">
+              <div class="page-nav-label">Current Page</div>
+              <div class="page-nav-current">${State.pageIndex + 1} / ${State.pages.length}</div>
+            </div>
+            <button class="btn btn-primary btn-lg" id="next-page" ${State.pageIndex === State.pages.length - 1 ? 'disabled' : ''}>Next →</button>
+          </nav>
+
+        </div>
+      `;
+
+      setupPageEvents(p);
+    }
+
+    /* =============================================================
+       CODE HIGHLIGHTING (simple)
+       ============================================================= */
+    function highlightCode(code, lang) {
+      let html = esc(code);
+      if (lang === 'javascript' || lang === 'js') {
+        html = html
+          .replace(/\b(const|let|var|function|return|if|else|import|export|from|async|await|new)\b/g, '<span class="keyword">$1</span>')
+          .replace(/\b(useEffect|useMemo|useCallback|useState|useRef)\b/g, '<span class="function">$1</span>')
+          .replace(/(\/\/.*)/g, '<span class="comment">$1</span>')
+          .replace(/('.*?'|".*?")/g, '<span class="string">$1</span>')
+          .replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
+      }
+      if (lang === 'sql') {
+        html = html
+          .replace(/\b(SELECT|FROM|WHERE|JOIN|ON|AND|OR|INSERT|UPDATE|DELETE|CREATE|INDEX|TABLE)\b/gi, '<span class="keyword">$1</span>')
+          .replace(/(--.*)/g, '<span class="comment">$1</span>')
+          .replace(/('.*?')/g, '<span class="string">$1</span>');
+      }
+      return html;
+    }
+
+    /* =============================================================
+       PAGE EVENTS
+       ============================================================= */
+    function setupPageEvents(page) {
+      // Navigation
+      document.getElementById('prev-page')?.addEventListener('click', () => goTo(State.pageIndex - 1));
+      document.getElementById('next-page')?.addEventListener('click', () => goTo(State.pageIndex + 1));
+
+      // Copy code
+      document.getElementById('copy-code')?.addEventListener('click', async (e) => {
+        try {
+          await navigator.clipboard.writeText(page.code.snippet);
+          e.target.textContent = 'Copied!';
+          setTimeout(() => e.target.textContent = 'Copy', 1500);
+        } catch (err) { console.error(err); }
+      });
+
+      // Quiz
+      const quizOptions = document.getElementById('quiz-options');
+      const quizFeedback = document.getElementById('quiz-feedback');
+
+      if (quizOptions) {
+        quizOptions.addEventListener('click', (e) => {
+          const btn = e.target.closest('.quiz-option');
+          if (!btn || btn.disabled) return;
+
+          // Disable all
+          quizOptions.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+
+          const isCorrect = btn.dataset.correct === 'true';
+          const correctBtn = quizOptions.querySelector('[data-correct="true"]');
+
+          if (isCorrect) {
+            btn.classList.add('correct');
+          } else {
+            btn.classList.add('incorrect');
+            correctBtn.classList.add('correct');
+          }
+
+          quizFeedback.classList.add('show');
+          if (!isCorrect) {
+            quizFeedback.querySelector('h4').textContent = 'Not quite!';
+            quizFeedback.style.borderLeftColor = 'var(--error)';
+            quizFeedback.querySelector('h4').style.color = 'var(--error)';
+          }
+        });
+      }
+
+      // Teach-back auto-save
+      const textarea = document.getElementById('teachback-note');
+      if (textarea) {
+        const save = debounce(val => localStorage.setItem(storageKey(page.id), val), 400);
+        textarea.addEventListener('input', e => save(e.target.value));
+      }
+
+      // Copy note
+      document.getElementById('copy-note')?.addEventListener('click', async (e) => {
+        const note = document.getElementById('teachback-note')?.value || '';
+        try {
+          await navigator.clipboard.writeText(note);
+          e.target.textContent = 'Copied!';
+          setTimeout(() => e.target.textContent = 'Copy My Notes', 1500);
+        } catch (err) { console.error(err); }
+      });
+    }
+
+    /* =============================================================
+       DRAWER
+       ============================================================= */
+    function openDrawer() {
+      $.drawerOverlay.classList.add('open');
+      $.drawerOverlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDrawer() {
+      $.drawerOverlay.classList.remove('open');
+      $.drawerOverlay.setAttribute('aria-hidden', 'true');
+    }
+
+    /* =============================================================
+       INIT
+       ============================================================= */
+    function init() {
+      renderTopics();
+
+      // Global nav
+      $.backToTopics.addEventListener('click', () => showView($.viewTopics, $.viewModules));
+      $.backToModules.addEventListener('click', () => showView($.viewModules, $.viewNotebook));
+
+      // Sidebar delegation
+      $.sidebarList.addEventListener('click', e => {
+        const btn = e.target.closest('.sidebar-item');
+        if (btn) goTo(+btn.dataset.idx);
+      });
+
+      // Drawer
+      $.openDrawer.addEventListener('click', openDrawer);
+      $.closeDrawer.addEventListener('click', closeDrawer);
+      $.drawerOverlay.addEventListener('click', e => { if (e.target === $.drawerOverlay) closeDrawer(); });
+
+      $.drawerList.addEventListener('click', e => {
+        const btn = e.target.closest('.sidebar-item');
+        if (btn) { goTo(+btn.dataset.idx); closeDrawer(); }
+      });
+
+      // Escape key
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && $.drawerOverlay.classList.contains('open')) closeDrawer();
+      });
+
+      console.log('[Knotes] Ready');
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
